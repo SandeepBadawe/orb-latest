@@ -832,6 +832,16 @@ module.exports.PivotCell = React.createClass({
                 break;
             case 'cell-template-datavalue':
                 value = (cell.datafield && cell.datafield.formatFunc) ? cell.datafield.formatFunc()(cell.value) : cell.value;
+  
+                // FIX 002 FIX START
+            
+                // Aggregated data to have conditional formating. Added in config       styleFunc: function(value) { return value > 0 ? {color:"red", "text-align":"center"} : {color:"red", "text-align":"center"}; }
+                // Added a styleFunc as a member of config object with value set by user
+                var styleData =cell.datafield.styleFunc()(cell.value);
+
+                // FIX 002 END
+
+                
                 cellClick = function() {
                     self.props.pivotTableComp.pgridwidget.drilldown(cell, self.props.pivotTableComp.id);
                 };
@@ -864,6 +874,15 @@ module.exports.PivotCell = React.createClass({
 
         return React.createElement("td", {
                 className: getClassname(this.props),
+            
+                // FIX 002 FIX START
+            
+                // Aggregated data to have conditional formating. Added in config       styleFunc: function(value) { return value > 0 ? {color:"red", "text-align":"center"} : {color:"red", "text-align":"center"}; }
+                // Added a styleFunc as a member of config object with value set by user
+                style: styleData ? styleData : {},
+
+                // FIX 002 END
+
                 onDoubleClick: cellClick,
                 colSpan: cell.hspan(),
                 rowSpan: cell.vspan()
