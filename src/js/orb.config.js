@@ -261,7 +261,7 @@ module.exports.config = function(config) {
     //    fieldconfig = ensureFieldConfig(fieldconfig);
     //    return createfield(self, axe.Type.DATA, fieldconfig, getfield(self.allFields, fieldconfig.name));
     //});
-    
+    // Identify the fields in data are by their caption, which is expected to be unique, rather than just name
     this.dataFields = (config.data || []).map(function(fieldconfig1) {
         let fieldconfig = ensureFieldConfig(fieldconfig1);
         return createfield(self, axe.Type.DATA, fieldconfig, getfieldForDataByCaption(self.allFields, fieldconfig1));
