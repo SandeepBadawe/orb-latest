@@ -42,8 +42,20 @@ var docFooter = '</body></html>';
  * @memberOf orb.ui
  * @param  {orb.axe} rowsAxe - axe containing all rows dimensions.
  */
- module.exports = function(pgridwidget) {
 
+// FIX 005 FIX START
+            
+// Double click  on aggregation data cell opens a table, but it's data can not be exported
+// An icon added on top of table.
+// defaultToolbarConfig.exportToExcel() called with pivot object and data as parameters
+// Added data as additional parameter to module.exports()
+
+// Replaced below line by next line
+ //module.exports = function(pgridwidget) {
+ module.exports = function(pgridwidget, data) { 
+  
+// FIX 005 END
+  
  	var config = pgridwidget.pgrid.config;
 
  	var currTheme = themeManager.current();
@@ -141,6 +153,50 @@ var docFooter = '</body></html>';
  	function toBase64(str) {
  		return utils.btoa(unescape(encodeURIComponent(str)));
  	}
+  
+  // FIX 005 FIX START
+            
+  // Double click  on aggregation data cell opens a table, but it's data can not be exported
+  // An icon added on top of table.
+  // defaultToolbarConfig.exportToExcel() called with pivot object and data as parameters
+  // Added data as additional parameter to module.exports()
+
+   // If data is passed, it means it is the table data from data parameter, not the pivot data, is to has to be exported
+   if(data)
+   {
+       // Reset the variables which are not required
+       dataFields = sep = columnFields = "";
+       let keys = Object.keys(data[0]);
+       // Get the headers as table row. Find the caption from all fields data with matching name. If key name does not match then use name as is
+       columnHeaders = "<tr>";
+       for(let i = 0, j; i < keys.length; i++)
+       {
+           // Search field for matching name and then use it;s caption
+           for(j = 0; j < config.allFields.length; j++)
+           {
+               if(config.allFields[j].name === keys[i])
+               {
+                   columnHeaders += createButtonCell(config.allFields[j].caption);
+                   break;
+               }
+           }
+           // If caption not found, then use the name
+           if(j === config.allFields.length)
+               columnHeaders += createButtonCell(keys[i]);
+       }
+       columnHeaders += "</tr>";
+       // Get the data as table row.
+       rowHeadersAndDataCells = "";
+       for(let j = 0; j < data.length; j++)
+       {
+           rowHeadersAndDataCells += "<tr>";
+           for(let i = 0; i < keys.length; i++)
+               rowHeadersAndDataCells += "<td>"+data[j][keys[i]]+"</td>";
+           rowHeadersAndDataCells += "</tr>";
+       }
+   }
+
+  // FIX 005 END  
 
  	return uriHeader +
  		toBase64(docHeader +
