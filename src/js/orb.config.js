@@ -286,7 +286,46 @@ module.exports.config = function(config) {
         }
         return null;
     }
+    
+    // Fix 001 Start for same field is needed multiple times in data area.
+    
+    // Identify the fields in data are by their caption, which is expected to be unique, rather than just name
+    // Added below code for 3 function to get field data based on caption, which is unique, instead of field name
+    function getfieldByCaption(axefields, fieldCaption) {
+        var fieldindex = getfieldindexByCaption(axefields, fieldCaption);
+        if (fieldindex > -1) {
+            return axefields[fieldindex];
+        }
+        return null;
+    }
+    function getfieldForDataByCaption(axefields, fieldCaption) {
+        var fieldindex = getfieldindexByCaption(axefields, fieldCaption);//self.dataSourceFieldCaptions.indexOf(fieldCaption);//getfieldindex(axefields, fieldname);
+        if (fieldindex > -1) {
+            return axefields[fieldindex];
+        }
+        return null;
+    }
+    function getfieldindexByCaption(axefields, fieldCaption) {
+        for (var fi = 0; fi < axefields.length; fi++) {
+            if (axefields[fi].caption === fieldCaption) {
+                return fi;
+            }
+        }
+        return -1;
+    }
+    this.getDataFieldByCaption = function(fieldCaption) {
+        return getfieldByCaption(self.dataFields, fieldCaption);
+    };
 
+    function getfieldForData(axefields, fieldname) {
+        var fieldindex = getfieldindex(axefields, fieldname);
+        if (fieldindex > -1) {
+            return axefields[fieldindex];
+        }
+        return null;
+    }
+    // FIX 001 END
+    
     function getfieldindex(axefields, fieldname) {
         for (var fi = 0; fi < axefields.length; fi++) {
             if (axefields[fi].name === fieldname) {
