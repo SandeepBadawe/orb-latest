@@ -2761,13 +2761,30 @@ module.exports.Grid = React.createClass({
             }
         }
 
-        return React.createElement("table", {
+        // FIX 005 FIX START
+            
+        // Double click  on aggregation data cell opens a table, but it's data can not be exported
+        // An icon added on top of table.
+        // defaultToolbarConfig.exportToExcel() called with pivot object and data as parameters
+        // Added data as additional parameter to module.exports()
+
+        // Replaced below return statement with new one
+        /*return React.createElement("table", {
                 className: tableClasses.table
             },
             React.createElement("tbody", null,
                 rows
             )
-        );
+        );*/
+        
+        let exportButton = React.createElement("button", { className: "orb-tlbr-btn export-xls", onClick: () => {
+                                                                                                                    defaultToolbarConfig.exportToExcel({props:{pgridwidget:this.props.pgridComponent}}, null, data);
+                                                                                                                } } );
+        let table = React.createElement("table", { className: tableClasses.table }, React.createElement("tbody", null, rows ) );
+        let div =  React.createElement("div", { className:"" }, [exportButton, table]);
+        return div;
+             
+        // FIX 005 END
     }
 });
 
@@ -2952,10 +2969,38 @@ module.exports.Toolbar = React.createClass({
 var excelExport = require('../orb.export.excel');
 
 var defaultToolbarConfig = {
-    exportToExcel: function(pgridComponent, button) {
+    
+    // FIX 005 FIX START
+            
+    // Double click  on aggregation data cell opens a table, but it's data can not be exported
+    // An icon added on top of table.
+    // defaultToolbarConfig.exportToExcel() called with pivot object and data as parameters
+    // Added data as additional parameter to module.exports()
+    // Added data as additional parameter to defaultToolbarConfig.exportToExcel()
+
+    // Replaced below line by next line
+    //exportToExcel: function(pgridComponent, button) {
+    exportToExcel: function(pgridComponent, button, data) {
+    
+    // FIX 005 END    
+    
         var a = document.createElement('a');
         a.download = "orbpivotgrid.xls";
-        a.href = excelExport(pgridComponent.props.pgridwidget);
+        
+        // FIX 005 FIX START
+
+        // Double click  on aggregation data cell opens a table, but it's data can not be exported
+        // An icon added on top of table.
+        // defaultToolbarConfig.exportToExcel() called with pivot object and data as parameters
+        // Added data as additional parameter to module.exports()
+        // Added data as additional parameter to defaultToolbarConfig.exportToExcel()
+
+        // Replaced below line by next line
+        //a.href = excelExport(pgridComponent.props.pgridwidget);
+        a.href = excelExport(pgridComponent.props.pgridwidget, data);
+        
+        // FIX 005 END
+
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
