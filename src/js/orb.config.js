@@ -255,11 +255,21 @@ module.exports.config = function(config) {
         return createfield(self, axe.Type.COLUMNS, fieldconfig, getfield(self.allFields, fieldconfig.name));
     });
 
-    this.dataFields = (config.data || []).map(function(fieldconfig) {
-        fieldconfig = ensureFieldConfig(fieldconfig);
-        return createfield(self, axe.Type.DATA, fieldconfig, getfield(self.allFields, fieldconfig.name));
+    // Fix 001 Start for same field is needed multiple times in data area.
+
+    //this.dataFields = (config.data || []).map(function(fieldconfig) {
+    //    fieldconfig = ensureFieldConfig(fieldconfig);
+    //    return createfield(self, axe.Type.DATA, fieldconfig, getfield(self.allFields, fieldconfig.name));
+    //});
+    
+    this.dataFields = (config.data || []).map(function(fieldconfig1) {
+        let fieldconfig = ensureFieldConfig(fieldconfig1);
+        return createfield(self, axe.Type.DATA, fieldconfig, getfieldForDataByCaption(self.allFields, fieldconfig1));
     });
 
+    // Fix 001 End
+    
+    
     this.dataFieldsCount = this.dataFields ? (this.dataFields.length || 1) : 1;
 
     var runtimeVisibility = {
