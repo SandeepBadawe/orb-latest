@@ -41,6 +41,14 @@ function mergefieldconfigs() {
             aggregateFuncName: nnconfig.aggregateFuncName,
             aggregateFunc: i === 0 ? nnconfig.aggregateFunc : (nnconfig.aggregateFunc ? nnconfig.aggregateFunc() : null),
             formatFunc: i === 0 ? nnconfig.formatFunc : (nnconfig.formatFunc ? nnconfig.formatFunc() : null),
+
+            // FIX 002 FIX START
+            
+            // Aggregated data to have conditional formating. Added in config       styleFunc: function(value) { return value > 0 ? {color:"red", "text-align":"center"} : {color:"red", "text-align":"center"}; }
+            // Added a styleFunc as a member of config object with value set by user
+            styleFunc: i === 0 ? nnconfig.styleFunc : (nnconfig.styleFunc ? nnconfig.styleFunc() : null)
+
+            // FIX 002 END
         });
     }
 
@@ -96,6 +104,14 @@ function createfield(rootconfig, axetype, fieldconfig, defaultfieldconfig) {
         aggregateFuncName: getpropertyvalue('aggregateFuncName', merged.functions, 'sum'),
         aggregateFunc: getpropertyvalue('aggregateFunc', merged.functions, aggregation.sum),
         formatFunc: getpropertyvalue('formatFunc', merged.functions, null)
+        
+        // FIX 002 FIX START
+
+        // Aggregated data to have conditional formating. Added in config       styleFunc: function(value) { return value > 0 ? {color:"red", "text-align":"center"} : {color:"red", "text-align":"center"}; }
+        // Added a styleFunc as a member of config object with value set by user
+        styleFunc: getpropertyvalue('styleFunc', merged.functions, null)
+
+        // FIX 002 END
     }, false);
 }
 
@@ -175,6 +191,17 @@ var Field = module.exports.field = function(options, createSubOptions) {
 
     this.aggregateFunc(options.aggregateFunc);
     this.formatFunc(options.formatFunc || defaultFormatFunc);
+    
+    // FIX 002 FIX START
+
+    // Aggregated data to have conditional formating. Added in config       styleFunc: function(value) { return value > 0 ? {color:"red", "text-align":"center"} : {color:"red", "text-align":"center"}; }
+    // Added a styleFunc as a member of config object with value set by user
+    var _styleFunc;
+    function defaultStyleFunc(val) { return val !== null ? val.toString() : ''; }
+    this.styleFunc = function(func) {if(func) _styleFunc = func; else return _styleFunc;};
+    this.styleFunc(options.styleFunc || defaultStyleFunc);
+
+    // FIX 002 END
 
     if (createSubOptions !== false) {
         (this.rowSettings = new Field(options.rowSettings, false)).name = this.name;
