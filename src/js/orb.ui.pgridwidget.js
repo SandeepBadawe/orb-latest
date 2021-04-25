@@ -172,45 +172,68 @@ module.exports = function(config) {
 
     this.drilldown = function(dataCell, pivotId) {
         if(dataCell) {
-            var colIndexes = dataCell.columnDimension.getRowIndexes();
-            var data = dataCell.rowDimension.getRowIndexes().filter(function(index) {
-                //return colIndexes.indexOf(index) >= 0;
-                return (colIndexes.length === 0 ) || (colIndexes.indexOf(index) >= 0);
-            }).map(function(index) {
-                return self.pgrid.filteredDataSource[index];
-            });
+            
+            // FIX 004 FIX START
+            
+            // User should be able to process double click on the aggregated data cell
+            // Added a call back in config object obDoubleClick:function(){console.log("In cell double click");}
+            if(config.onDoubleClick)
+            {
+                config.onDoubleClick();
+            }
+            else
+            {
 
-            var title;
-            if(dataCell.rowType === uiheaders.HeaderType.GRAND_TOTAL && dataCell.colType === uiheaders.HeaderType.GRAND_TOTAL) {
-                title = 'Grand total';
-            } else {
-                if(dataCell.rowType === uiheaders.HeaderType.GRAND_TOTAL) {
-                    title = dataCell.columnDimension.value + '/Grand total ';
-                } else if(dataCell.colType === uiheaders.HeaderType.GRAND_TOTAL) {
-                    title = dataCell.rowDimension.value + '/Grand total ';
+            // FIX 002 END
+
+            
+                var colIndexes = dataCell.columnDimension.getRowIndexes();
+                var data = dataCell.rowDimension.getRowIndexes().filter(function(index) {
+                    //return colIndexes.indexOf(index) >= 0;
+                    return (colIndexes.length === 0 ) || (colIndexes.indexOf(index) >= 0);
+                }).map(function(index) {
+                    return self.pgrid.filteredDataSource[index];
+                });
+
+                var title;
+                if(dataCell.rowType === uiheaders.HeaderType.GRAND_TOTAL && dataCell.colType === uiheaders.HeaderType.GRAND_TOTAL) {
+                    title = 'Grand total';
                 } else {
-                    title = dataCell.rowDimension.value + '/' + dataCell.columnDimension.value;
+                    if(dataCell.rowType === uiheaders.HeaderType.GRAND_TOTAL) {
+                        title = dataCell.columnDimension.value + '/Grand total ';
+                    } else if(dataCell.colType === uiheaders.HeaderType.GRAND_TOTAL) {
+                        title = dataCell.rowDimension.value + '/Grand total ';
+                    } else {
+                        title = dataCell.rowDimension.value + '/' + dataCell.columnDimension.value;
+                    }
                 }
+
+                var pivotStyle = window.getComputedStyle( ReactDOM.findDOMNode(pivotComponent), null );
+
+                dialog.show({
+                    title: title,
+                    comp: {
+                        type: OrbReactComps.Grid,
+                        props: {
+                            headers: self.pgrid.config.getDataSourceFieldCaptions(),
+                            data: data,
+                            theme: self.pgrid.config.theme
+                        }
+                    },
+                    theme: self.pgrid.config.theme,
+                    style: {
+                        fontFamily: pivotStyle.getPropertyValue('font-family'),
+                        fontSize: pivotStyle.getPropertyValue('font-size')
+                    }
+                });
+            // FIX 004 FIX START
+            
+            // User should be able to process double click on the aggregated data cell
+            // Added a call back in config object obDoubleClick:function(){console.log("In cell double click");}
+            // Closing } for if(config.onDoubleClick)
             }
 
-            var pivotStyle = window.getComputedStyle( ReactDOM.findDOMNode(pivotComponent), null );
-
-            dialog.show({
-                title: title,
-                comp: {
-                    type: OrbReactComps.Grid,
-                    props: {
-                        headers: self.pgrid.config.getDataSourceFieldCaptions(),
-                        data: data,
-                        theme: self.pgrid.config.theme
-                    }
-                },
-                theme: self.pgrid.config.theme,
-                style: {
-                    fontFamily: pivotStyle.getPropertyValue('font-family'),
-                    fontSize: pivotStyle.getPropertyValue('font-size')
-                }
-            });
+            // FIX 002 END
         }
     };
 
