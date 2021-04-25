@@ -143,7 +143,16 @@ module.exports = function(config) {
         if (rowdim && coldim) {
 
             var datafieldName = field || (self.config.dataFields[0] || defaultfield).name;
-            var datafield = self.config.getDataField(datafieldName);
+            
+            // Fix 001 Start for same field is needed multiple times in data area.
+            // Identify the fields in data are by their caption, which is expected to be unique, rather than just name
+            
+            // Replaced below line by mext 2 lines
+            //var datafield = self.config.getDataField(datafieldName);
+            var fieldCaption = field || (self.config.dataFields[0] || defaultfield).caption;
+            var datafield = self.config.getDataFieldByCaption(fieldCaption);
+
+            // Fix 001 END
             
             if(!datafield || (aggregateFunc && datafield.aggregateFunc != aggregateFunc)) {
                 value = self.calcAggregation(
@@ -235,7 +244,15 @@ module.exports = function(config) {
                 if(emptyIntersection) {
                     res[datafield.field.name] = null;
                 } else {
-                    res[datafield.field.name] = datafield.aggregateFunc(datafield.field.name, intersection || 'all', self.filteredDataSource, origRowIndexes || rowIndexes, colIndexes);
+                    
+                    // Fix 001 Start for same field is needed multiple times in data area.
+                    // Identify the fields in data are by their caption, which is expected to be unique, rather than just name
+                    
+                    // Replaced below line by next line
+                    //res[datafield.field.name] = datafield.aggregateFunc(datafield.field.name, intersection || 'all', self.filteredDataSource, origRowIndexes || rowIndexes, colIndexes);
+                    res[datafield.field.caption] = datafield.aggregateFunc(datafield.field.name, intersection || 'all', self.filteredDataSource, origRowIndexes || rowIndexes, colIndexes);
+                    
+                    // Fix 001 END
                 }
             }
         }
