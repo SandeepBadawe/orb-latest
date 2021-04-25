@@ -218,6 +218,19 @@ module.exports = function(config) {
                             headers: self.pgrid.config.getDataSourceFieldCaptions(),
                             data: data,
                             theme: self.pgrid.config.theme
+
+                            // FIX 005 FIX START
+
+                            // Double click  on aggregation data cell opens a table, but it's data can not be exported
+                            // An icon added on top of table.
+                            // defaultToolbarConfig.exportToExcel() called with pivot object and data as parameters
+                            // Added data as additional parameter to module.exports()
+
+                            // Grid display function needs the pivot grid object to access the field details. Added new key to props
+                            ,pgridComponent:self
+
+                            // FIX 005 END
+                            
                         }
                     },
                     theme: self.pgrid.config.theme,
