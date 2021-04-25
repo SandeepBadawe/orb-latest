@@ -295,7 +295,15 @@ module.exports.dataCell = function(pgrid, isvisible, rowinfo, colinfo) {
         axetype: null,
         type: HeaderType.DATA_VALUE,
         template: 'cell-template-datavalue',
-        value: pgrid.getData(this.datafield ? this.datafield.name : null, this.rowDimension, this.columnDimension),
+        
+        // Fix 001 Start for same field is needed multiple times in data area.
+        // Identify the fields in data are by their caption, which is expected to be unique, rather than just name
+        
+        // Replaced below line by next line
+        //value: pgrid.getData(this.datafield ? this.datafield.name : null, this.rowDimension, this.columnDimension),
+        value: pgrid.getData(this.datafield ? this.datafield.caption : null, this.rowDimension, this.columnDimension),
+        // Fix 001 END
+        
         cssclass: 'cell ' + HeaderType.getCellClass(this.rowType, this.colType),
         isvisible: isvisible
     });
